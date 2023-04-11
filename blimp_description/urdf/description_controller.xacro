@@ -47,7 +47,7 @@
 		joint_name="bot_rud_part1_bot_rud_motor_joint"
 		link_name="bot_rud_motor_link"
 		direction="cw"
-		motor_constant="${motor_constant}"
+		motor_constant="${bot_motor_constant}"
 		moment_constant="${moment_constant}"
 		time_constant_up="${time_constant_up}"
 		time_constant_down="${time_constant_down}"
