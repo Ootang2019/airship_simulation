@@ -38,62 +38,57 @@ Installation Instructions - Ubuntu 20.04 with ROS Noetic and Gazebo 11
 1. Install and initialize ROS Noetic desktop full, additional ROS packages, catkin-tools, and wstool:
 
 ```console
-$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-$ sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-$ sudo apt update
-$ sudo apt install ros-noetic-desktop-full ros-noetic-joy ros-noetic-octomap-ros ros-noetic-mavlink
-$ sudo apt install python-wstool python-catkin-tools protobuf-compiler libgoogle-glog-dev ros-noetic-control-toolbox
-$ sudo rosdep init
-$ rosdep update
-$ echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-$ source ~/.bashrc
-$ sudo apt install build-essential
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+sudo apt update
+sudo apt install ros-noetic-desktop-full ros-noetic-joy ros-noetic-octomap-ros ros-noetic-mavlink
+sudo apt install python-wstool python-catkin-tools protobuf-compiler libgoogle-glog-dev ros-noetic-control-toolbox
+sudo rosdep init
+rosdep update
+echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+sudo apt install build-essential
 ```
 2. If you don't have ROS workspace yet you can do so by
 
 ```console
-$ mkdir -p ~/catkin_ws/src
-$ cd ~/catkin_ws/src
-$ catkin_init_workspace  # initialize your catkin workspace
-$ git clone --recurse-submodules https://github.com/Ootang2019/airship_simulation.git -b abcdrl
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/src
+catkin_init_workspace  # initialize your catkin workspace
+git clone --recurse-submodules https://github.com/Ootang2019/airship_simulation.git -b abcdrl
 ```
 
 3. Build your workspace with `python_catkin_tools` 
 
 ```console
-$ cd ~/catkin_ws
-$ rosdep install --from-paths src -i
-$ catkin_make
-$ source devel/setup.bash
+cd ~/catkin_ws
+rosdep install --from-paths src -i
+catkin_make
+source devel/setup.bash
 ```
 
 4. Add sourcing to your `.bashrc` file
 
 ```console
-$ echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
-$ source ~/.bashrc
+echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
+source ~/.bashrc
 ```
 
 5. To build the LibrePilot Submodule, go into the LibrePilot subfolder
 
 ```console
-$ cd src/airship_simulation/LibrePilot
-$ # install qt sdk for building of GCS
-$ make qt_sdk_install
-$ # install arm sdk for building of flightcontroller firmware
-$ make arm_sdk_install
-$ # install uncrustify
-$ make uncrustify_install
-$ # install build dependencies
-$ sudo apt install libusb-dev libsdl-dev libudev-dev libosgearth-dev libopenscenegraph-3.4-dev gcc-7 g++-7
-$ # IMPORTANT # Ubuntu20 uses gcc-9 by default, but gcs does not compile with gcc9 due to some new warnings treated as errors
-$ # build gcs - ENFORCE gcc-7
-$ GCS_QMAKE_OPTS="QMAKE_CXX=g++-7 QMAKE_CC=gcc-7" make -j 10 gcs
-$ # if this fails, check error message for possible additional dependencies
-$ # build SITL flightcontroller executable
-$ make -j 10 fw_simposix
-$ # build HITL flightcontroller firmware
-$ make -j 10 fw_revolution
+cd src/airship_simulation/LibrePilot
+# install build dependencies
+sudo apt install libusb-dev libsdl-dev libudev-dev libosgearth-dev libopenscenegraph-dev qtmultimedia5-dev qtscript5-dev libqt5*-dev libqt5multimedia5-plugins qml-module-qtquick* gcc-7 g++-7
+
+# IMPORTANT # Ubuntu20 uses gcc-9 by default, but gcs does not compile with gcc9 due to some new warnings treated as errors
+# build gcs - ENFORCE gcc-7
+GCS_QMAKE_OPTS="QMAKE_CXX=g++-7 QMAKE_CC=gcc-7" make -j 10 gcs
+# if this fails, check error message for possible additional dependencies
+# build SITL flightcontroller executable
+make -j 10 fw_simposix
+# build HITL flightcontroller firmware
+make -j 10 fw_revolution
 ```
 
 Note:If make fw_revolution fails with "Command not Found" it's likely that the ARM crosscompiler, which is a 32bit binary, cannot be executed.
@@ -105,18 +100,18 @@ Basic Usage
 After installing, you can test with the following commands in a terminal
 
 ```console
-$ roslaunch blimp_description blimp_gcs.launch
-$ # or
-$ roslaunch blimp_description blimp_gcs_wind.launch
+roslaunch blimp_description blimp_gcs.launch
+# or
+roslaunch blimp_description blimp_gcs_wind.launch
 ```
 
 To fly with blimp, it is necessary to run a flight controller (physical, plugged in via USB, or virtual, running simposix) and the GCS to run the HITL interface.
 
 SITL:
 ```console
-$ cd ~/catkin_ws/src/airship_simulation/LibrePilot
-$ # note the 0 at the end - this is an index, required if multiple instances need to run simultaneously
-$ ./build/firmware/fw_simposix/fw_simposix.elf 0
+cd ~/catkin_ws/src/airship_simulation/LibrePilot
+# note the 0 at the end - this is an index, required if multiple instances need to run simultaneously
+./build/firmware/fw_simposix/fw_simposix.elf 0
 
 ```
 
@@ -132,8 +127,8 @@ This can be loaded through the GCS after connecting to the flight controller, se
 
 GCS:
 ```console
-$ cd ~/catkin_ws/src/airship_simulation/LibrePilot
-$ ./build/librepilot-gcs_release/bin/librepilot-gcs
+cd ~/catkin_ws/src/airship_simulation/LibrePilot
+./build/librepilot-gcs_release/bin/librepilot-gcs
 ```
 Required Configuration of GCS:
 1. Go to Tools -> Options -> IP Network Telemetry
@@ -204,7 +199,7 @@ The pathplan can be executed in the "PathPlanner" flight mode - position 4 on th
 
   1. Load simulation with:
 ```console
-$ roslaunch blimp_description blimp_gcs_wind.launch
+roslaunch blimp_description blimp_gcs_wind.launch
 ```
   2. Fly the blimp manually
      * Start GCS and SITL Flight Controller, Connect to Flight Controller
@@ -219,7 +214,7 @@ $ roslaunch blimp_description blimp_gcs_wind.launch
 
   1. Load simulation with:
 ```console
-$ roslaunch blimp_description blimp_gcs.launch
+roslaunch blimp_description blimp_gcs.launch
 ```
   2. Engage position hold
      * Start GCS and SITL Flight Controller, Connect to Flight Controller
@@ -227,7 +222,7 @@ $ roslaunch blimp_description blimp_gcs.launch
      * Put Flight Mode Switch to "3" (Position Hold)
   3. Start Flight Controller ROS integration to expose additional data topics
 ```console
-$ rosrun librepilot librepilot_node /blimp UDP 127.0.0.1 9002
+rosrun librepilot librepilot_node /blimp UDP 127.0.0.1 9002
 ```
   4. Record data with "rosbag record" if desired.
 
@@ -237,7 +232,7 @@ $ rosrun librepilot librepilot_node /blimp UDP 127.0.0.1 9002
 
   1. Load simulation with:
 ```console
-$ roslaunch blimp_description blimp_gcs.launch
+roslaunch blimp_description blimp_gcs.launch
 ```
   2. Engage position hold
      * Start GCS and SITL Flight Controller, Connect to Flight Controller
@@ -247,7 +242,7 @@ $ roslaunch blimp_description blimp_gcs.launch
      * Put Flight Mode Switch to "4" (Path Plan)
   3. Start Flight Controller ROS integration to expose additional data topics
 ```console
-$ rosrun librepilot librepilot_node /blimp UDP 127.0.0.1 9002
+rosrun librepilot librepilot_node /blimp UDP 127.0.0.1 9002
 ```
   4. Record data with "rosbag record" if desired.
 
@@ -257,7 +252,7 @@ $ rosrun librepilot librepilot_node /blimp UDP 127.0.0.1 9002
 
   1. Load simulation with:
 ```console
-$ roslaunch blimp_description blimp_gcs_wind.launch
+roslaunch blimp_description blimp_gcs_wind.launch
 ```
   2. Proceed as with Experiment 2 and 3
  
@@ -267,12 +262,12 @@ $ roslaunch blimp_description blimp_gcs_wind.launch
 
   1. Load simulation with:
 ```console
-$ roslaunch blimp_description blimp_gcs.launch
+roslaunch blimp_description blimp_gcs.launch
 ```
   2. Proceed as with Experiment 2 or 3
   3. During experiment, execute:
 ```console
-$ ./deflate_blimp.sh 8 0 0.2 .95
+./deflate_blimp.sh 8 0 0.2 .95
 ```
   
 --------------
